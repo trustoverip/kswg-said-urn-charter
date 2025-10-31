@@ -96,7 +96,11 @@ It is important to note that verification of SAID (therefore `urn:said`) must be
 
 Security and Privacy: 
 
-No known security or privacy issues exist for this URN namespace.
+`urn:said` identifiers are designed to identify digital assets. Do not assume they are random or hard to guess. In fact, if the digital content itself is known they can be deterministically derived for a given digest algorithm. Such identifiers, therefore, should not be naively used for security capabilities (identifiers whose mere possesion grants privileged access).
+
+The SAID must be encoded with one of the digest algorithms provided in the CESR code tables, as defined in Section 11.1 of CESR 2.0 specification (which may be viewed as the security considerations for SAID). This normative requriement is that cryptographic primitives that are entered in the table must maintain 128 bits of cryptographic strength. This strength protects against attempts to alter the binding between a `urn:said` identifier and its self-referenced content. Additional digest algorithms may be added to the code table in the future, e.g. for approved NIST post-quantum resistant cryptographic operations.
+
+Adding `urn:said` identifier to the self-referenced digital asset does not change privacy considerations.
 
 Interoperability: 
 
@@ -110,7 +114,7 @@ These URNs are non-resolvable and serve as globally unique identifiers. In futur
 
 Documentation: 
 
-- Composable Event Streaming Representation (CESR) version 2.0
+- CESR 2.0: Composable Event Streaming Representation (CESR) Genus AAA, code table version CAA (i.e. 2.0), https://trustoverip.github.io/kswg-cesr-specification/#keriacdc-protocol-genus-version-table
 - RFC 4648: The Base16, Base32, and Base64 Data Encodings, https://datatracker.ietf.org/doc/html/rfc4648
 
 Additional Information:  NONE
