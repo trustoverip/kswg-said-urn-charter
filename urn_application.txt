@@ -98,7 +98,7 @@ Security and Privacy:
 
 `urn:said` identifiers are designed to identify digital assets. Do not assume they are random or hard to guess. In fact, if the digital content itself is known they can be deterministically derived for a given digest algorithm. Such identifiers, therefore, should not be naively used for security capabilities (identifiers whose mere possesion grants privileged access).
 
-The SAID must be encoded with one of the digest algorithms provided in the CESR code tables, as defined in Section 11.1 of CESR 2.0 specification (which may be viewed as the security considerations for SAID). This normative requriement is that cryptographic primitives that are entered in the table must maintain 128 bits of cryptographic strength. This strength protects against attempts to alter the binding between a `urn:said` identifier and its self-referenced content. Additional digest algorithms may be added to the code table in the future, e.g. for approved NIST post-quantum resistant cryptographic operations.
+The SAID must be encoded with one of the digest algorithms provided in the CESR code tables, as defined in Section 11.1 of CESR 2.0 specification (which may be viewed as the security considerations for SAID). This normative requirement is that cryptographic primitives that are entered in the table must maintain 128 bits of cryptographic strength. This strength protects against attempts to alter the binding between a `urn:said` identifier and its self-referenced content. Additional digest algorithms may be added to the code table in the future, e.g. for approved NIST post-quantum resistant cryptographic operations.
 
 Adding `urn:said` identifier to the self-referenced digital asset does not change privacy considerations.
 
