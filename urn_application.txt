@@ -195,6 +195,8 @@ Hex: 0001 14116a3b1b50225060df5c2bf4154a25
 URN:
 urn:said:FBFqOxtQIlBg31wr9BVKJTm1rpNF3caPDE_Vn1vWR1ey
 
+Note that the `said` identifier is a Base64URLSafe character string for `urn:said` identifiers. The SAID contained in the binary data structure is in binary.
+
 Security and Privacy: 
 
 `urn:said` identifiers are designed to identify digital assets. Do not assume they are random or hard to guess. In fact, if the digital content itself is known they can be deterministically derived for a given digest algorithm. Such identifiers, therefore, should not be naively used for security capabilities (identifiers whose mere possesion grants privileged access).
