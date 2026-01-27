@@ -64,11 +64,37 @@ CESR (Composable Event Streaming Representation) is a dual text-binary encoding 
 
 The digital assets identified by an `urn:said` identifier must contain the SAID identifier in itself (i.e. self-referential). The SAID derivation procedure defined by CESR Spec [1] (Section 11.6) requires a consistent serialization scheme for the digital assets in order for correct representation and verification. In other words, SAID identifies the serialization of the digital assets where it is also contained.
 
-The serialization scheme used for SAID derivation must be known to verifiers. This is typically established by the application context or protocol in which the SAID appears. The serialization scheme information is not encoded in the SAID. Note that applications can choose their own serialization schemes, but for reproducibility and verification, the chosen scheme must preserve the size and order of data fields in the structure. For interoperability over a network, standardized serialization methods such as JSON, CBOR, MessagePack, as well as native CESR can be used.
+The serialization scheme used for SAID derivation must be known to verifiers. This is typically established by the application context or protocol in which the SAID appears. The serialization scheme information is not encoded in the SAID. Note that applications can choose their own serialization schemes, but for reproducibility and verification, the chosen scheme must preserve the size and order of data fields in the structure. For interoperability over a network, standardized serialization methods such as JSON, CBOR, MessagePack, and CESR can be used.
 
 To illustrate, here are some examples of how the derivation works (from CESR [1], Section 11.6):
 
-(1) Python dict data structure (Python 3.6 or later where dict is order preserving)
+(1) CESR format example
+
+Suppose the initial value of the fixed field serialization is the 76-character string as follows:
+
+field_0_01234567field_1_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789field_2_98765432
+
+where:
+field0 is the 16-character string “field_0_01234567” field1 is the 44-character placeholder string “field_1_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789” field2 is the 16 character string “field_2_98765432”
+
+The first step to generating the SAID for this serialization is to replace the placeholder contents of field1 with a dummy string of # characters of length 44. This produces a dummied 76-character string as follows:
+
+field_0_01234567############################################field_2_98765432
+
+Let's say we choose to use Blake3-256. The digest is then computed on the above string and encoded in CESR format. This is the SAID of the 76-character string as follows:
+
+ENI2bDYghiu1KYYkFrPofH8tJ5tNiNt8WrTIc4s_5IIH
+
+Replacing the 44 dummy characters with the SAID of the same length produces the final SAIDified string as follows:
+
+field_0_01234567ENI2bDYghiu1KYYkFrPofH8tJ5tNiNt8WrTIc4s_5IIHfield_2_98765432
+
+To verify the embedded SAID with respect to its encompassing serialization above, just reverse the generation steps. In other words, replace the SAID in the string with dummy characters of the same length, compute the Blake3 digest as SAID of this dummied version, and then compare the SAIDs.
+
+The resulting URN:
+`urn:said:ENI2bDYghiu1KYYkFrPofH8tJ5tNiNt8WrTIc4s_5IIH`
+
+(2) Python dict example (Python 3.6 or later where dict is order preserving. Or use OrderedDict)
 
 Suppose the initial value of Python dict data structure is as follows:
 {
@@ -106,7 +132,68 @@ Now, the Python data structure may be updated to:
     "role": "Founder"
 }
 
-It is important to note that verification of SAID (therefore `urn:said`) must be performed on the consistent serialization format of the digital asset.
+The verification of SAID (therefore `urn:said`) reverses the generation process. Note that the data fields do not have to be text; they can be binary, but must be fixed in size / consistent in order for verification to work.
+
+The resulting URN:
+`uen:said:EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ`
+
+(3) JSON Schema $id example
+
+Applying the same procedure as the above example, we produce this self-referential JSON Schema:
+
+{
+    "$id": "EGU_SHY-8ywNBJOqPKHr4sXV9tOtOwpYzYOM63_zUCDW",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "full_name": {
+            "type": "string"
+        }
+    }
+}
+
+The resulting URN:
+`urn:said:EGU_SHY-8ywNBJOqPKHr4sXV9tOtOwpYzYOM63_zUCDW`
+
+(4) Binary data example
+
+Suppose a fixed-format binary record with the following layout:
+
+Offset      Size        Field
+0           2           Record type (big-endian)
+2           33          SAID slot (256-bit, binary domain)
+35          4           Payload
+
+Step 1: Initial data with placeholder
+The application defines a record with type 0x0001 and payload 0xDEADBEEF. Insert 33 placeholder bytes (0x23 = #) at the SAID slot:
+
+Hex: 0001 23232323232323232323232323232323
+          23232323232323232323232323232323
+          23 DEADBEEF
+Total: 39 bytes
+
+Step 2: Compute digest
+Apply Blake2b-256 over the 39-byte sequence, yielding the 32-byte digest:
+
+116a3b1b50225060df5c2bf4154a2539b5ae9345ddc68f0c4fd59f5bd64757b2
+
+Step 3: Encode as CESR
+Text domain (44 characters):
+FBFqOxtQIlBg31wr9BVKJTm1rpNF3caPDE_Vn1vWR1ey
+
+Note that we choose Blake2b-256 in this example whose one character code is `F`.
+
+Binary domain (33 bytes):
+14116a3b1b50225060df5c2bf4154a2539b5ae9345ddc68f0c4fd59f5bd64757b2
+
+Step 4: Replace placeholder with SAID
+
+Final binary record (39 bytes):
+Hex: 0001 14116a3b1b50225060df5c2bf4154a25
+          39b5ae9345ddc68f0c4fd59f5bd64757
+          b2 DEADBEEF
+URN:
+urn:said:FBFqOxtQIlBg31wr9BVKJTm1rpNF3caPDE_Vn1vWR1ey
 
 Security and Privacy: 
 
@@ -119,6 +206,8 @@ Adding `urn:said` identifier to the self-referenced digital asset does not chang
 Interoperability: 
 
 A SAID string MUST be CESR encoded which self-identifies the digest algorithm used to generate it. This greatly enhances interoperability and future adaptability. In addition, the use of CESR encoding allows lossless transformation between binary and text domains. This property is useful in digital assets which may be most optimally represented in binary or serialization schemes such as CBOR.
+
+The serialization method used must be known out of band by the verifiers.
 
 Adopters MAY consider narrowing selections of digest functions to reduce complexity and improve interoperability with some cost in flexibility.
 
