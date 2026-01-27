@@ -104,7 +104,7 @@ Suppose the initial value of Python dict data structure is as follows:
     "role": "Founder"
 }
 
-If we choose the 44 CESR character Blake3-256 digest for SAID derivation and use JSON serialization, the first of the derivation procedure is to insert the `#` character in place of the future SAID string:
+If we choose the 44 CESR character Blake3-256 digest for SAID derivation and use JSON serialization, the first step of the derivation procedure is to insert the `#` character in place of the future SAID string:
 {
     "said": "############################################",
     "first": "Sue",
