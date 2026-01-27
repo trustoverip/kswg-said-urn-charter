@@ -2,9 +2,9 @@ Namespace Registration for Self-Addressing Identifiers (SAID)
 
 Namespace Identifier:  said
 
-Version:  1
+Version:  2
 
-Date:  2025-09-25
+Date:  2026-01-27
 
 Registrant: Sam Smith, Wenjing Chu, Carly Huitema
 on behalf of ToIP (Trust over IP), a project of the Linux Foundation Decentralized Trust
