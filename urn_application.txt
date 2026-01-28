@@ -37,7 +37,7 @@ cesr-digest-value = <Base64URLSafe encoded digest, length determined by cesr-cod
 ; Base64URLSafe characters (RFC 4648, excluding padding)
 base64urlsafe = ALPHA / DIGIT / "-" / "_"
 
-; The complete said primitive MUST conform to CESR code table [2], CESR spec Section 11.4.
+; The complete SAID primitive MUST conform to CESR code table [2], CESR spec Section 11.4.
 ; The following currently defined digest codes, for example, produce SAIDs of 44 or 88 characters total.
 ;
 ; 256-bit SAIDs: 44 characters total (1 char code + 43 Base64URLSafe)
