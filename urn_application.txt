@@ -62,7 +62,7 @@ The SAID strings conforming to this scheme are self-assigned, based on the deriv
 
 CESR (Composable Event Streaming Representation) is a dual text-binary encoding format providing lossless round-trip conversion between text (Base64URLSafe) and binary domains. CESR primitives are self-framing: each primitive includes a prepended type code identifying both the cryptographic algorithm and value length, enabling stream parsing without external delimiters. A Self-Addressing Identifier (SAID) is derived by: (1) designating a location within the data for the SAID, (2) inserting a placeholder of the appropriate length at that location, (3) computing a cryptographic digest over the entire byte sequence, and (4) replacing the placeholder with the CESR-encoded digest. The placeholder length equals the final SAID length: 33 bytes in the binary domain or 44 characters in the text domain for a 256-bit digest. Verification reverses this process. The CESR type code (e.g., E for Blake3-256) makes the digest algorithm self-describing, providing cryptographic agility.
 
-The digital assets identified by an `urn:said` identifier must contain the SAID identifier in itself (i.e. self-referential). The SAID derivation procedure defined by CESR Spec [1] (Section 11.6) requires a consistent serialization scheme for the digital assets in order for correct representation and verification. In other words, SAID identifies the serialization of the digital assets where it is also contained.
+The digital assets identified by an `urn:said` identifier must contain the SAID identifier in itself (i.e. self-referential). The SAID derivation procedure defined by CESR Spec [1] (Section 11.6) requires a consistent serialization scheme for the digital assets in order for correct representation and verification. In other words, a SAID identifies the serialized digital asset where it is also contained.
 
 The serialization scheme used for SAID derivation must be known to verifiers. This is typically established by the application context or protocol in which the SAID appears. The serialization scheme information is not encoded in the SAID. Note that applications can choose their own serialization schemes, but for reproducibility and verification, the chosen scheme must preserve the size and order of data fields in the structure. For interoperability over a network, standardized serialization methods such as JSON, CBOR, MessagePack, and CESR can be used.
 
@@ -201,7 +201,7 @@ Security and Privacy:
 
 `urn:said` identifiers are designed to identify digital assets. Do not assume they are random or hard to guess. In fact, if the digital content itself is known they can be deterministically derived for a given digest algorithm. Such identifiers, therefore, should not be naively used for security capabilities (identifiers whose mere possesion grants privileged access).
 
-The SAID must be encoded with one of the digest algorithms provided in the CESR code tables, as defined in Section 11.1 of CESR 2.0 specification (which may be viewed as the security considerations for SAID). This normative requirement is that cryptographic primitives that are entered in the table must maintain 128 bits of cryptographic strength. This strength protects against attempts to alter the binding between a `urn:said` identifier and its self-referenced content. Additional digest algorithms may be added to the code table in the future, e.g. for approved NIST post-quantum resistant cryptographic operations.
+The SAID must be encoded with one of the digest algorithms provided in the CESR code tables, as defined in Section 11.1 of CESR specification[2] (which may be viewed as the security considerations for SAID). This normative requirement is that cryptographic primitives that are entered in the table must maintain 128 bits of cryptographic strength. This strength protects against attempts to alter the binding between a `urn:said` identifier and its self-referenced content. Additional digest algorithms may be added to the code table in the future, e.g. for approved NIST post-quantum resistant cryptographic operations.
 
 Adding `urn:said` identifier to the self-referenced digital asset does not change privacy considerations.
 
@@ -209,7 +209,7 @@ Interoperability:
 
 A SAID string MUST be CESR encoded which self-identifies the digest algorithm used to generate it. This greatly enhances interoperability and future adaptability. In addition, the use of CESR encoding allows lossless transformation between binary and text domains. This property is useful in digital assets which may be most optimally represented in binary or serialization schemes such as CBOR.
 
-The serialization method used must be known out of band by the verifiers.
+The serialization method used MUST be known out of band or by context by the verifiers.
 
 Adopters MAY consider narrowing selections of digest functions to reduce complexity and improve interoperability with some cost in flexibility.
 
