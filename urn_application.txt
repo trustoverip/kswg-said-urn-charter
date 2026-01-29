@@ -94,7 +94,7 @@ To verify the embedded SAID with respect to its encompassing serialization above
 The resulting URN:
 `urn:said:ENI2bDYghiu1KYYkFrPofH8tJ5tNiNt8WrTIc4s_5IIH`
 
-(2) Python dict example (Python 3.6 or later where dict is order preserving. Or use OrderedDict)
+(2) JSON serialized data example
 
 Suppose the initial value of Python dict data structure is as follows:
 {
@@ -112,7 +112,7 @@ If we choose the 44 CESR character Blake3-256 digest for SAID derivation and use
     "role": "Founder"
 }
 
-For consistent serialization, we remove all extra white space:
+For consistent JSON serialization, we remove all extra white space:
 {"said":"############################################","first":"Sue","last":"Smith","role":"Founder"}
 
 Apply Blake3-256 digest algorithm to this representation, we obtain the SAID (encoded in CESR) string (in text format):
@@ -135,7 +135,7 @@ Now, the Python data structure may be updated to:
 The verification of SAID (therefore `urn:said`) reverses the generation process. Note that the data fields do not have to be text; they can be binary, but must be fixed in size / consistent in order for verification to work.
 
 The resulting URN:
-`uen:said:EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ`
+`urn:said:EJymtAC4piy_HkHWRs4JSRv0sb53MZJr8BQ4SMixXIVJ`
 
 (3) JSON Schema $id example
 
