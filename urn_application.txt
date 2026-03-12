@@ -2,9 +2,9 @@ Namespace Registration for Self-Addressing Identifiers (SAID)
 
 Namespace Identifier:  said
 
-Version:  2
+Version:  3
 
-Date:  2026-01-27
+Date:  2026-03-12
 
 Registrant: Sam Smith, Wenjing Chu, Carly Huitema
 on behalf of ToIP (Trust over IP), a project of the Linux Foundation Decentralized Trust
@@ -13,7 +13,7 @@ Contact email: (Wenjing Chu) trustoverip@lfdecentralizedtrust.org
 
 Purpose: 
 
-Self-Addressing Identifiers (SAIDs) are self-referential content-addressable identifiers based on Composable Event Streaming Representation (CESR) [1] encoded cryptographic digest. This proposal defines a method to unambiguously identify digital assets that contain their SAIDs via their SAID identifiers in the urn:said namespace. Such urn:said identifiers can ease the ways of adopting SAIDs anywhere URNs are accepted and improve interoperability. These URNs are typically non-resolvable, serving as unique identifiers. However, optional mechanisms could be introduced in the future in addressing such requirements.
+Self-Addressing Identifiers (SAIDs) are self-referential content-addressable identifiers based on Composable Event Streaming Representation (CESR) [1] encoded cryptographic digest. This proposal defines a method to unambiguously identify digital assets that contain their SAIDs via their SAID identifiers in the urn:said namespace. Such urn:said identifiers can ease the ways of adopting SAIDs anywhere URNs are accepted and improve interoperability. These URNs are typically non-resolvable, serving as unique identifiers. However, optional mechanisms could be introduced in the future in addressing such requirements. Another future improvement may introduce optional SAID location/format indicator to facilitate structure-free verification.
 
 Syntax:
 
@@ -37,7 +37,7 @@ cesr-digest-value = <Base64URLSafe encoded digest, length determined by cesr-cod
 ; Base64URLSafe characters (RFC 4648, excluding padding)
 base64urlsafe = ALPHA / DIGIT / "-" / "_"
 
-; The complete SAID primitive MUST conform to CESR code table [2], CESR spec Section 11.4.
+; The complete SAID primitive MUST conform to CESR code table [2], CESR spec Section 11.4.2
 ; The following currently defined digest codes, for example, produce SAIDs of 44 or 88 characters total.
 ;
 ; 256-bit SAIDs: 44 characters total (1 char code + 43 Base64URLSafe)
@@ -64,7 +64,7 @@ CESR (Composable Event Streaming Representation) is a dual text-binary encoding 
 
 The digital assets identified by an `urn:said` identifier must contain the SAID identifier in itself (i.e. self-referential). The SAID derivation procedure defined by CESR Spec [1] (Section 11.6) requires a consistent serialization scheme for the digital assets in order for correct representation and verification. In other words, a SAID identifies the serialized digital asset where it is also contained.
 
-The serialization scheme used for SAID derivation must be known to verifiers. This is typically established by the application context or protocol in which the SAID appears. The serialization scheme information is not encoded in the SAID. Note that applications can choose their own serialization schemes, but for reproducibility and verification, the chosen scheme must preserve the size and order of data fields in the structure. For interoperability over a network, standardized serialization methods such as JSON, CBOR, MessagePack, and CESR can be used.
+The serialization scheme used for SAID derivation must be known to verifiers. This is typically established by the application context or protocol in which the SAID appears. The serialization scheme information is not encoded in the SAID. Note that applications can choose their own serialization schemes, but for reproducibility and verification, the chosen scheme must preserve the size and order of data fields in the structure. For interoperability over a network, standardized serialization methods such as JSON, CBOR, MessagePack, and CESR can be used. Note that this requirement may be loosened in future by introducing an optional SAID location/format indicator within the string to facilitate verification without prior knowledge of the serialization scheme.
 
 To illustrate, here are some examples of how the derivation works (from CESR [1], Section 11.6):
 
@@ -84,6 +84,8 @@ field_0_01234567############################################field_2_98765432
 Let's say we choose to use Blake3-256. The digest is then computed on the above string and encoded in CESR format. This is the SAID of the 76-character string as follows:
 
 ENI2bDYghiu1KYYkFrPofH8tJ5tNiNt8WrTIc4s_5IIH
+
+where the first letter 'E' signifies the use of Blake3-256 Digest as specified in the code table [2] (Section 11.4.2 of the CESR specification where all codes for supported digest functions are defined) and the rest of the string is the Blake3-256 digest of the string "field_0_01234567############################################field_2_98765432".
 
 Replacing the 44 dummy characters with the SAID of the same length produces the final SAIDified string as follows:
 
@@ -181,7 +183,7 @@ Step 3: Encode as CESR
 Text domain (44 characters):
 FBFqOxtQIlBg31wr9BVKJTm1rpNF3caPDE_Vn1vWR1ey
 
-Note that we choose Blake2b-256 in this example whose one character code is `F`.
+Note that we choose Blake2b-256 in this example whose one character code is `F` (as defined in the CESR code table [2]).
 
 Binary domain (33 bytes):
 14116a3b1b50225060df5c2bf4154a2539b5ae9345ddc68f0c4fd59f5bd64757b2
@@ -201,7 +203,7 @@ Security and Privacy:
 
 `urn:said` identifiers are designed to identify digital assets. Do not assume they are random or hard to guess. In fact, if the digital content itself is known they can be deterministically derived for a given digest algorithm. Such identifiers, therefore, should not be naively used for security capabilities (identifiers whose mere possesion grants privileged access).
 
-The SAID must be encoded with one of the digest algorithms provided in the CESR code tables, as defined in Section 11.1 of CESR specification[2] (which may be viewed as the security considerations for SAID). This normative requirement is that cryptographic primitives that are entered in the table must maintain 128 bits of cryptographic strength. This strength protects against attempts to alter the binding between a `urn:said` identifier and its self-referenced content. Additional digest algorithms may be added to the code table in the future, e.g. for approved NIST post-quantum resistant cryptographic operations.
+The SAID must be encoded with one of the digest algorithms provided in the CESR code tables, as defined in Section 11.4.2 of CESR specification [2] (which may be viewed as the security considerations for SAID). This normative requirement is that cryptographic primitives that are entered in the table must maintain 128 bits of cryptographic strength. This strength protects against attempts to alter the binding between a `urn:said` identifier and its self-referenced content. Additional digest algorithms may be added to the code table in the future, e.g. for approved NIST post-quantum resistant cryptographic operations.
 
 Adding `urn:said` identifier to the self-referenced digital asset does not change privacy considerations.
 
@@ -209,7 +211,7 @@ Interoperability:
 
 A SAID string MUST be CESR encoded which self-identifies the digest algorithm used to generate it. This greatly enhances interoperability and future adaptability. In addition, the use of CESR encoding allows lossless transformation between binary and text domains. This property is useful in digital assets which may be most optimally represented in binary or serialization schemes such as CBOR.
 
-The serialization method used MUST be known out of band or by context by the verifiers.
+The serialization method used MUST be known out of band or by context by the verifiers. In a future revision, we may extend the urn:said string to specify an optional SAID location and format indicator to facilitate verification and further improve interoperability.
 
 Adopters MAY consider narrowing selections of digest functions to reduce complexity and improve interoperability with some cost in flexibility.
 
@@ -219,9 +221,9 @@ These URNs are non-resolvable and serve as globally unique identifiers. In futur
 
 Documentation: 
 
-- [1] CESR: omposable Event Streaming Representation, https://trustoverip.github.io/kswg-cesr-specification
-- [2] CESR Code Table: Composable Event Streaming Representation (CESR) Genus AAA, the latest code table (the current version at the time of this application: CAA, i.e. 2.0), https://trustoverip.github.io/kswg-cesr-specification/#keriacdc-protocol-genus-version-table
-- [3] RFC 4648: The Base16, Base32, and Base64 Data Encodings, https://datatracker.ietf.org/doc/html/rfc4648
+- [1] Smith, S., & Feairheller, P. (2026). Composable Event Streaming Representation (CESR). Zenodo. https://doi.org/10.5281/zenodo.18879946. See also: https://trustoverip.github.io/kswg-cesr-specification.
+- [2] Section 11.4.2 of reference [1], "Master code table for genus/version -_AAACAA (KERI/ACDC protocol stack Version 2.00)". See also: https://trustoverip.github.io/kswg-cesr-specification/#keriacdc-protocol-genus-version-table.
+- [3] RFC 4648: The Base16, Base32, and Base64 Data Encodings, https://datatracker.ietf.org/doc/html/rfc4648.
 
 Additional Information:  NONE
 
