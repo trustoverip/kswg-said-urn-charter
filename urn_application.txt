@@ -2,7 +2,7 @@ Namespace Registration for Self-Addressing Identifiers (SAID)
 
 Namespace Identifier:  said
 
-Version:  3
+Version:  0.4
 
 Date:  2026-03-12
 
@@ -58,7 +58,7 @@ The first example is 44 characters long in text representation, where `E` indica
 
 Assignment: 
 
-The SAID strings conforming to this scheme are self-assigned, based on the derivation of the SAID as per CESR Spec [1]. 
+The SAID strings conforming to this scheme are algorithmically generated, based on the derivation of the SAID as per CESR Spec [1]. 
 
 CESR (Composable Event Streaming Representation) is a dual text-binary encoding format providing lossless round-trip conversion between text (Base64URLSafe) and binary domains. CESR primitives are self-framing: each primitive includes a prepended type code identifying both the cryptographic algorithm and value length, enabling stream parsing without external delimiters. A Self-Addressing Identifier (SAID) is derived by: (1) designating a location within the data for the SAID, (2) inserting a placeholder of the appropriate length at that location, (3) computing a cryptographic digest over the entire byte sequence, and (4) replacing the placeholder with the CESR-encoded digest. The placeholder length equals the final SAID length: 33 bytes in the binary domain or 44 characters in the text domain for a 256-bit digest. Verification reverses this process. The CESR type code (e.g., E for Blake3-256) makes the digest algorithm self-describing, providing cryptographic agility.
 
@@ -217,7 +217,7 @@ Adopters MAY consider narrowing selections of digest functions to reduce complex
 
 Resolution:
 
-These URNs are non-resolvable and serve as globally unique identifiers. In future, however, we may extend this scheme with optional information for easier resolution.
+These URNs are non-resolvable and serve as globally unique identifiers. A future version of this registration may define optional information making it easier to resolve SAID URNs.
 
 Documentation: 
 
